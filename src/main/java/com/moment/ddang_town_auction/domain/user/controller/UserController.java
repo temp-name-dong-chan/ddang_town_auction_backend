@@ -3,6 +3,7 @@ package com.moment.ddang_town_auction.domain.user.controller;
 import com.moment.ddang_town_auction.domain.user.dto.request.UserRefreshRequestDto;
 import com.moment.ddang_town_auction.domain.user.dto.request.UserSigninRequestDto;
 import com.moment.ddang_town_auction.domain.user.dto.request.UserSignupRequestDto;
+import com.moment.ddang_town_auction.domain.user.dto.response.UserInfoResponseDto;
 import com.moment.ddang_town_auction.domain.user.dto.response.UserSigninResponseDto;
 import com.moment.ddang_town_auction.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -55,10 +56,12 @@ public class UserController {
 
     @GetMapping("users/info")
     @Operation(summary = "유저 정보 조회")
-    public ResponseEntity<String> getUserInfo(
+    public ResponseEntity<UserInfoResponseDto> getUserInfo(
         Authentication authentication
     ) {
-        return ResponseEntity.ok(authentication.getName());
+        return ResponseEntity.ok(
+            new UserInfoResponseDto(authentication.getName())
+        );
     }
 
 }
