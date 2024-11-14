@@ -61,7 +61,7 @@ public class SpringSecurityConfig {
                         "/configuration/ui",     // Swagger UI 설정
                         "/configuration/security"// Swagger 보안 설정
                     ).permitAll()
-                    .requestMatchers("/api/health").permitAll()
+                    .requestMatchers("/health").permitAll()
                     .requestMatchers("/api/signup", "/api/signin", "api/refresh").permitAll()
                     .anyRequest().authenticated()
             )
