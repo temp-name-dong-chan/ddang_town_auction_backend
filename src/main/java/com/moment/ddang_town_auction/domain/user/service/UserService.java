@@ -1,5 +1,8 @@
 package com.moment.ddang_town_auction.domain.user.service;
 
+import com.moment.ddang_town_auction.domain.town.entity.Town;
+import com.moment.ddang_town_auction.domain.town.service.TownService;
+import com.moment.ddang_town_auction.domain.user.dto.request.UserCityCreateRequestDto;
 import com.moment.ddang_town_auction.domain.user.dto.request.UserRefreshRequestDto;
 import com.moment.ddang_town_auction.domain.user.dto.request.UserSigninRequestDto;
 import com.moment.ddang_town_auction.domain.user.dto.request.UserSignupRequestDto;
@@ -8,10 +11,13 @@ import com.moment.ddang_town_auction.domain.user.entity.User;
 import com.moment.ddang_town_auction.domain.user.repository.UserRepository;
 import com.moment.ddang_town_auction.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 @Service
 public class UserService {
 
@@ -19,9 +25,11 @@ public class UserService {
     private final static Long REFRESH_TOKEN_EXPIRED_MS = 1000 * 60 * 60 * 24 * 7L; // 1 day
 
     private final UserRepository userRepository;
+    private final TownService townService;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     public void signup(UserSignupRequestDto userSignupRequestDto) {
         validateEmail(userSignupRequestDto.getEmail());
         validateNickname(userSignupRequestDto.getNickname());
@@ -63,6 +71,16 @@ public class UserService {
         User user = getUserByEmail(email);
         String accessToken = jwtUtil.createJwt(user.getEmail(), ACCESS_TOKEN_EXPIRED_MS);
         return new UserSigninResponseDto(accessToken, userRefreshRequestDto.getRefreshToken());
+    }
+
+    @Transactional
+    public void setUserTown(
+        UserCityCreateRequestDto userCityCreateRequestDto,
+        Authentication authentication
+    ) {
+        User user = getUserByEmail(authentication.getName());
+        Town town = townService.getTownByName(userCityCreateRequestDto.getTownName());
+        user.updateTown(town);
     }
 
     private void validateEmail(String email) {
