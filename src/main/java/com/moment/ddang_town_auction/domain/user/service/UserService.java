@@ -29,6 +29,12 @@ public class UserService {
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
 
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(
+                () -> new NullPointerException("해당하는 유저가 없습니다.")
+        );
+    }
+
     @Transactional
     public void signup(UserSignupRequestDto userSignupRequestDto) {
         validateEmail(userSignupRequestDto.getEmail());
@@ -99,12 +105,6 @@ public class UserService {
         if (!password.equals(confirmPassword)) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
-    }
-
-    private User getUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(
-                () -> new NullPointerException("해당하는 유저가 없습니다.")
-        );
     }
 
 }

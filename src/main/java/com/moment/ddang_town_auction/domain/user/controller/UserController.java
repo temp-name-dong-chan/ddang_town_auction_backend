@@ -14,11 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -31,7 +27,7 @@ public class UserController {
     @Operation(summary = "회원가입")
     @ApiResponse(responseCode = "201")
     public ResponseEntity<Void> signup(
-        @Valid @RequestBody UserSignupRequestDto userSignupRequestDto
+            @Valid @RequestBody UserSignupRequestDto userSignupRequestDto
     ) {
         userService.signup(userSignupRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -40,7 +36,7 @@ public class UserController {
     @PostMapping("/signin")
     @Operation(summary = "로그인")
     public ResponseEntity<UserSigninResponseDto> signin(
-        @Valid @RequestBody UserSigninRequestDto userSigninRequestDto
+            @Valid @RequestBody UserSigninRequestDto userSigninRequestDto
     ) {
         UserSigninResponseDto userSigninResponseDto = userService.signin(userSigninRequestDto);
         return ResponseEntity.ok(userSigninResponseDto);
@@ -49,7 +45,7 @@ public class UserController {
     @PostMapping("/refresh")
     @Operation(summary = "리프레시 토큰")
     public ResponseEntity<UserSigninResponseDto> refresh(
-        @RequestBody UserRefreshRequestDto userRefreshRequestDto
+            @RequestBody UserRefreshRequestDto userRefreshRequestDto
     ) {
         UserSigninResponseDto userSigninResponseDto = userService.refresh(userRefreshRequestDto);
         return ResponseEntity.ok(userSigninResponseDto);
@@ -58,18 +54,18 @@ public class UserController {
     @GetMapping("users/info")
     @Operation(summary = "유저 정보 조회")
     public ResponseEntity<UserInfoResponseDto> getUserInfo(
-        Authentication authentication
+            Authentication authentication
     ) {
         return ResponseEntity.ok(
-            new UserInfoResponseDto(authentication.getName())
+                new UserInfoResponseDto(authentication.getName())
         );
     }
 
-    @PostMapping("users/city")
+    @PostMapping("users/town")
     @Operation(summary = "유저 도시 설정")
     public ResponseEntity<Void> setUserTown(
-        @RequestBody TownRequestDto townRequestDto,
-        Authentication authentication
+            @RequestBody TownRequestDto townRequestDto,
+            Authentication authentication
     ) {
         userService.setUserTown(townRequestDto, authentication);
         return ResponseEntity.status(HttpStatus.OK).build();

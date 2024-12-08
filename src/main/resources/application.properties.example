@@ -2,6 +2,8 @@ spring.application.name=ddang_town_auction
 
 # swagger
 springdoc.swagger-ui.path=/docs
+springdoc.swagger-ui.operations-sorter=alpha
+springdoc.swagger-ui.tags-sorter=alpha
 
 # mysql
 spring.datasource.url=jdbc:mysql://rds_endpoint:3306/your_db
