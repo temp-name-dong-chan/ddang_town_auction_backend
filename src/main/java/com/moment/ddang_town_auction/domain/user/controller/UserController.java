@@ -1,6 +1,6 @@
 package com.moment.ddang_town_auction.domain.user.controller;
 
-import com.moment.ddang_town_auction.domain.user.dto.request.UserCityCreateRequestDto;
+import com.moment.ddang_town_auction.domain.town.dto.request.TownRequestDto;
 import com.moment.ddang_town_auction.domain.user.dto.request.UserRefreshRequestDto;
 import com.moment.ddang_town_auction.domain.user.dto.request.UserSigninRequestDto;
 import com.moment.ddang_town_auction.domain.user.dto.request.UserSignupRequestDto;
@@ -68,10 +68,10 @@ public class UserController {
     @PostMapping("users/city")
     @Operation(summary = "유저 도시 설정")
     public ResponseEntity<Void> setUserTown(
-        @RequestBody UserCityCreateRequestDto userCityCreateRequestDto,
+        @RequestBody TownRequestDto townRequestDto,
         Authentication authentication
     ) {
-        userService.setUserTown(userCityCreateRequestDto, authentication);
+        userService.setUserTown(townRequestDto, authentication);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 

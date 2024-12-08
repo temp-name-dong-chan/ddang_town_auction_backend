@@ -1,8 +1,8 @@
 package com.moment.ddang_town_auction.domain.user.service;
 
+import com.moment.ddang_town_auction.domain.town.dto.request.TownRequestDto;
 import com.moment.ddang_town_auction.domain.town.entity.Town;
 import com.moment.ddang_town_auction.domain.town.service.TownService;
-import com.moment.ddang_town_auction.domain.user.dto.request.UserCityCreateRequestDto;
 import com.moment.ddang_town_auction.domain.user.dto.request.UserRefreshRequestDto;
 import com.moment.ddang_town_auction.domain.user.dto.request.UserSigninRequestDto;
 import com.moment.ddang_town_auction.domain.user.dto.request.UserSignupRequestDto;
@@ -34,17 +34,17 @@ public class UserService {
         validateEmail(userSignupRequestDto.getEmail());
         validateNickname(userSignupRequestDto.getNickname());
         validatePassword(
-            userSignupRequestDto.getPassword(),
-            userSignupRequestDto.getPasswordConfirm()
+                userSignupRequestDto.getPassword(),
+                userSignupRequestDto.getPasswordConfirm()
         );
         String password = passwordEncoder.encode(userSignupRequestDto.getPassword());
 
         userRepository.save(
-            new User(
-                userSignupRequestDto.getEmail(),
-                userSignupRequestDto.getNickname(),
-                password
-            )
+                new User(
+                        userSignupRequestDto.getEmail(),
+                        userSignupRequestDto.getNickname(),
+                        password
+                )
         );
 
     }
@@ -63,10 +63,10 @@ public class UserService {
     }
 
     public UserSigninResponseDto refresh(
-        UserRefreshRequestDto userRefreshRequestDto
+            UserRefreshRequestDto userRefreshRequestDto
     ) {
         String email = jwtUtil.getUsernameFromToken(
-            userRefreshRequestDto.getRefreshToken()
+                userRefreshRequestDto.getRefreshToken()
         );
         User user = getUserByEmail(email);
         String accessToken = jwtUtil.createJwt(user.getEmail(), ACCESS_TOKEN_EXPIRED_MS);
@@ -75,11 +75,11 @@ public class UserService {
 
     @Transactional
     public void setUserTown(
-        UserCityCreateRequestDto userCityCreateRequestDto,
-        Authentication authentication
+            TownRequestDto townRequestDto,
+            Authentication authentication
     ) {
         User user = getUserByEmail(authentication.getName());
-        Town town = townService.getTownByName(userCityCreateRequestDto.getTownName());
+        Town town = townService.getTown(townRequestDto);
         user.updateTown(town);
     }
 
@@ -103,7 +103,7 @@ public class UserService {
 
     private User getUserByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(
-            () -> new NullPointerException("해당하는 유저가 없습니다.")
+                () -> new NullPointerException("해당하는 유저가 없습니다.")
         );
     }
 

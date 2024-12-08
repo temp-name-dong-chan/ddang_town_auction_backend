@@ -1,7 +1,9 @@
 package com.moment.ddang_town_auction.domain.town.service;
 
+import com.moment.ddang_town_auction.domain.town.dto.request.TownRequestDto;
 import com.moment.ddang_town_auction.domain.town.entity.Town;
 import com.moment.ddang_town_auction.domain.town.repository.TownRepository;
+import com.moment.ddang_town_auction.global.exception.customException.NoTownException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,13 +23,24 @@ public class TownService {
 
     public Town getTownByName(String townName) {
         return townRepository.findByName(townName).orElseThrow(
-                () -> new NullPointerException("해당하는 도시가 없습니다.")
+                () -> new NoTownException("해당하는 도시가 없습니다.")
+        );
+    }
+
+    public Town getTown(TownRequestDto townRequestDto) {
+        return townRepository.findByName(townRequestDto.getTownName()).orElseGet(
+                () -> createTown(townRequestDto)
         );
     }
 
     public List<Town> getNearTowns(String townName) {
         Town town = getTownByName(townName);
         return townRepository.getNearTowns(town.getX(), town.getY(), defaultDistance);
+    }
+
+    public Town createTown(TownRequestDto townRequestDto) {
+        Town town = new Town(townRequestDto.getTownName(), townRequestDto.getX(), townRequestDto.getY());
+        return townRepository.save(town);
     }
 
 //    /*
