@@ -1,5 +1,6 @@
 package com.moment.ddang_town_auction.domain.town.entity;
 
+import com.moment.ddang_town_auction.global.common.entity.Timestamp;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "towns")
-public class Town {
+public class Town extends Timestamp {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
