@@ -1,14 +1,19 @@
 package com.moment.ddang_town_auction.domain.auction.service;
 
 import com.moment.ddang_town_auction.domain.auction.dto.request.AuctionCreateRequestDto;
+import com.moment.ddang_town_auction.domain.auction.dto.response.AuctionsResponseDto;
 import com.moment.ddang_town_auction.domain.auction.entity.Auction;
 import com.moment.ddang_town_auction.domain.auction.repository.AuctionRepository;
+import com.moment.ddang_town_auction.domain.town.service.TownService;
+import com.moment.ddang_town_auction.domain.user.dto.response.UserAuthenticationToken;
 import com.moment.ddang_town_auction.domain.user.entity.User;
 import com.moment.ddang_town_auction.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -17,6 +22,15 @@ public class AuctionService {
 
     private final AuctionRepository auctionRepository;
     private final UserService userService;
+    private final TownService townService;
+
+    public AuctionsResponseDto getAuctions(
+            UserAuthenticationToken userAuthenticationToken
+    ) {
+        List<Long> nearTownIds = townService.getNearTownIds(userAuthenticationToken.getTownId());
+        List<Auction> auctions = auctionRepository.getAuctionsInTowns(nearTownIds);
+        return new AuctionsResponseDto(auctions);
+    }
 
     @Transactional
     public void createAuction(AuctionCreateRequestDto auctionCreateRequestDto, Authentication authentication) {

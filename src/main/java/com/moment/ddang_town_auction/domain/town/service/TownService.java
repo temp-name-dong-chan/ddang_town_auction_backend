@@ -27,6 +27,12 @@ public class TownService {
         );
     }
 
+    private Town getTownByTownId(Long townId) {
+        return townRepository.findById(townId).orElseThrow(
+                () -> new NoTownException("해당하는 도시가 없습니다.")
+        );
+    }
+
     public Town getTown(TownRequestDto townRequestDto) {
         return townRepository.findByName(townRequestDto.getTownName()).orElseGet(
                 () -> createTown(townRequestDto)
@@ -36,6 +42,12 @@ public class TownService {
     public List<Town> getNearTowns(String townName) {
         Town town = getTownByName(townName);
         return townRepository.getNearTowns(town.getX(), town.getY(), defaultDistance);
+    }
+
+    public List<Long> getNearTownIds(Long townId) {
+        Town town = getTownByTownId(townId);
+        List<Town> nearTowns = townRepository.getNearTowns(town.getX(), town.getY(), defaultDistance);
+        return nearTowns.stream().map(Town::getId).toList();
     }
 
     public Town createTown(TownRequestDto townRequestDto) {
