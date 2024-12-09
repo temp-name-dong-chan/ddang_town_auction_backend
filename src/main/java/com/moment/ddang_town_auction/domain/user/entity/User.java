@@ -42,6 +42,10 @@ public class User extends Timestamp {
         this.password = password;
     }
 
+    public Long getTownId() {
+        return town.getId();
+    }
+
     public void updateTown(Town town) {
         this.town = town;
     }

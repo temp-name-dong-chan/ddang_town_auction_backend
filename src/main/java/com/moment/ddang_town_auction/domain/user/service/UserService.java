@@ -6,10 +6,12 @@ import com.moment.ddang_town_auction.domain.town.service.TownService;
 import com.moment.ddang_town_auction.domain.user.dto.request.UserRefreshRequestDto;
 import com.moment.ddang_town_auction.domain.user.dto.request.UserSigninRequestDto;
 import com.moment.ddang_town_auction.domain.user.dto.request.UserSignupRequestDto;
+import com.moment.ddang_town_auction.domain.user.dto.request.UserTokenRequestDto;
 import com.moment.ddang_town_auction.domain.user.dto.response.UserSigninResponseDto;
 import com.moment.ddang_town_auction.domain.user.entity.User;
 import com.moment.ddang_town_auction.domain.user.repository.UserRepository;
 import com.moment.ddang_town_auction.global.util.JwtUtil;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -62,8 +64,10 @@ public class UserService {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
 
-        String accessToken = jwtUtil.createJwt(user.getEmail(), ACCESS_TOKEN_EXPIRED_MS);
-        String refreshToken = jwtUtil.createJwt(user.getEmail(), REFRESH_TOKEN_EXPIRED_MS);
+        UserTokenRequestDto userTokenRequestDto = new UserTokenRequestDto(user.getEmail(), user.getTownId());
+
+        String accessToken = jwtUtil.createJwt(userTokenRequestDto, ACCESS_TOKEN_EXPIRED_MS);
+        String refreshToken = jwtUtil.createJwt(userTokenRequestDto, REFRESH_TOKEN_EXPIRED_MS);
 
         return new UserSigninResponseDto(accessToken, refreshToken);
     }
@@ -71,11 +75,12 @@ public class UserService {
     public UserSigninResponseDto refresh(
             UserRefreshRequestDto userRefreshRequestDto
     ) {
-        String email = jwtUtil.getUsernameFromToken(
+        Claims claims = jwtUtil.getClaimsFromToken(
                 userRefreshRequestDto.getRefreshToken()
         );
-        User user = getUserByEmail(email);
-        String accessToken = jwtUtil.createJwt(user.getEmail(), ACCESS_TOKEN_EXPIRED_MS);
+        User user = getUserByEmail(claims.get("email", String.class));
+        UserTokenRequestDto userTokenRequestDto = new UserTokenRequestDto(user.getEmail(), user.getTownId());
+        String accessToken = jwtUtil.createJwt(userTokenRequestDto, ACCESS_TOKEN_EXPIRED_MS);
         return new UserSigninResponseDto(accessToken, userRefreshRequestDto.getRefreshToken());
     }
 
