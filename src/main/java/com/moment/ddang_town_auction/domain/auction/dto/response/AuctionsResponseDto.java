@@ -8,11 +8,13 @@ import java.util.List;
 @Getter
 public class AuctionsResponseDto {
 
-    private final int auctionsCount;
     private final List<AuctionResponseDto> auctions;
+    private final boolean hasMore;
+    private final long lastAuctionId;
 
-    public AuctionsResponseDto(List<Auction> auctions) {
-        this.auctionsCount = auctions.size();
+    public AuctionsResponseDto(List<Auction> auctions, boolean hasMore) {
         this.auctions = auctions.stream().map(AuctionResponseDto::new).toList();
+        this.hasMore = hasMore;
+        this.lastAuctionId = this.hasMore ? auctions.getLast().getId() : -1;
     }
 }

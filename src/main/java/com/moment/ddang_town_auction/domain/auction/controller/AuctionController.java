@@ -20,13 +20,17 @@ public class AuctionController {
 
     private final AuctionService auctionService;
 
+    //    todo. sort 적용
+    //    todo. searchFilter
     @GetMapping
     @Operation(summary = "이웃 경매글 조회")
     public ResponseEntity<AuctionsResponseDto> getAuctions(
+            @RequestParam(required = false) Long lastAuctionId,
+            @RequestParam(defaultValue = "10") int pageSize,
             Authentication authentication
     ) {
         UserAuthenticationToken userAuthenticationToken = (UserAuthenticationToken) authentication;
-        AuctionsResponseDto auctionsResponseDto = auctionService.getAuctions(userAuthenticationToken);
+        AuctionsResponseDto auctionsResponseDto = auctionService.getAuctions(userAuthenticationToken, lastAuctionId, pageSize);
         return ResponseEntity.ok(auctionsResponseDto);
     }
 
@@ -40,4 +44,6 @@ public class AuctionController {
         auctionService.createAuction(auctionCreateRequestDto, authentication);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+//    todo. fileUpload api
 }
