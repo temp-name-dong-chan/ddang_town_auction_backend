@@ -9,8 +9,6 @@ import com.moment.ddang_town_auction.domain.user.dto.response.UserAuthentication
 import com.moment.ddang_town_auction.domain.user.entity.User;
 import com.moment.ddang_town_auction.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,11 +27,17 @@ public class AuctionService {
     public AuctionsResponseDto getAuctions(
             UserAuthenticationToken userAuthenticationToken,
             Long lastAuctionId,
-            int pageSize
+            int pageSize,
+            String sortOrder
     ) {
         List<Long> nearTownIds = townService.getNearTownIds(userAuthenticationToken.getTownId());
-        Pageable pageable = PageRequest.of(0, pageSize + 1);
-        List<Auction> auctions = auctionRepository.getAuctionsInTowns(nearTownIds, lastAuctionId, pageable);
+        List<Auction> auctions = auctionRepository.getAuctionsInTowns(
+                nearTownIds,
+                lastAuctionId,
+                pageSize + 1,
+                sortOrder
+        );
+
         boolean hasMore = auctions.size() > pageSize;
 
         if (hasMore) {
